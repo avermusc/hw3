@@ -2,6 +2,7 @@
 #define HEAP_H
 #include <functional>
 #include <stdexcept>
+#include <vector>
 
 template <typename T, typename PComparator = std::less<T> >
 class Heap
@@ -61,10 +62,11 @@ public:
 
 private:
   /// Add whatever helper functions and data members you need below
-
-
-
-
+  std::vector<T> heap;
+  int m_;
+  PComparator pcomp;
+  void trickleDown(size_t idx);
+  void trickleUp(int loc);
 };
 
 // Add implementation of member functions here
@@ -81,33 +83,87 @@ T const & Heap<T,PComparator>::top() const
     // ================================
     // throw the appropriate exception
     // ================================
-
-
+    throw std::underflow_error("Empty heap, no item on top.");
   }
-  // If we get here we know the heap has at least 1 item
-  // Add code to return the top element
-
-
-
+  else{
+    return heap.front();
+  }
 }
 
 
 // We will start pop() for you to handle the case of 
 // calling top on an empty heap
 template <typename T, typename PComparator>
-void Heap<T,PComparator>::pop()
+void Heap<T,PComparator>::pop()//referenced from CH9 Heap slides
 {
   if(empty()){
     // ================================
     // throw the appropriate exception
     // ================================
-
-
+    throw std::underflow_error("Empty heap, no items to pop.");
   }
-
-
-
+  if (heap.size() == 1){
+    heap.pop_back(); //no need to trickle down because we just emptied the heap
+  }
+  else{
+    heap[0] = heap.back();
+    heap.pop_back();
+    trickleDown(0);
+  }
 }
+
+template <typename T, typename PComparator>
+Heap<T,PComparator>::Heap(int m, PComparator c) : heap(), m_(m), pcomp(c){}
+
+template <typename T, typename PComparator>
+Heap<T,PComparator>::~Heap(){}
+
+template <typename T, typename PComparator>
+void Heap<T,PComparator>::push(const T& item){ //referenced from CH9 Heap slides
+  heap.push_back(item);
+  trickleUp(heap.size() - 1);
+}
+
+template <typename T, typename PComparator>
+bool Heap<T,PComparator>::empty() const{
+  return (heap.size() == 0);
+}
+
+template <typename T, typename PComparator>
+size_t Heap<T,PComparator>::size() const{
+  return heap.size();
+}
+
+template <typename T, typename PComparator>
+void Heap<T,PComparator>::trickleDown(size_t idx){ //referenced from CH9 Heap slides
+  if (m_ * idx + 1 >= heap.size()){ //if idx is a leaf node
+    return;
+  }
+  size_t smallerChild = m_ * idx + 1; //start w/ left
+  for (size_t i = smallerChild + 1; i <= std::min(heap.size() - 1, m_ * idx + m_); i++){ //parse through all valid children
+    if(pcomp(heap[i], heap[smallerChild])){ //if smaller child has a bigger value
+      smallerChild = i;
+    }
+  }
+  if (pcomp(heap[smallerChild], heap[idx])) {
+    std::swap(heap[idx], heap[smallerChild]);
+    trickleDown(smallerChild);
+  }
+}
+
+
+template <typename T, typename PComparator>
+void Heap<T,PComparator>::trickleUp(int loc){ //referenced from CH9 Heap slides
+  int parent = (loc - 1) / m_;
+  while (parent >= 0 && pcomp(heap[loc], heap[parent])){
+    std::swap(heap[loc], heap[parent]);
+    loc = parent;
+    parent = (loc - 1) / m_;
+  }
+}
+
+
+
 
 
 

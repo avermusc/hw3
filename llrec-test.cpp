@@ -66,7 +66,11 @@ void dealloc(Node* head)
 //   Add any helper functions or
 //   function object struct declarations
 // -----------------------------------------------
-
+struct pred{ //check if is even for llfilter()
+    bool operator() (int num) const{
+        return (num % 2) == 0;
+    } 
+};
 
 
 
@@ -84,9 +88,20 @@ int main(int argc, char* argv[])
     Node* head = readList(argv[1]);
     cout << "Original list: ";
     print(head);
+    //llpivot() testing
+    // Node* smaller = NULL;
+    // Node* larger = NULL;
+    // llpivot(head, smaller, larger, 9);
+    // cout << "smaller list: ";
+    // print(smaller);
+    // cout << "larger list: ";
+    // print(larger);
 
-    // Test out your linked list code
 
+    //llfilter() testing
+    Node* filter = llfilter(head, pred());
+    cout << "List w/ no evens: ";
+    print(filter);
 
 
     

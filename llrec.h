@@ -80,11 +80,18 @@ Node* llfilter(Node* head, Comp pred);
 template <typename Comp>
 Node* llfilter(Node* head, Comp pred)
 {
-    //*********************************************
-    // Provide your implementation below
-    //*********************************************
-
-
+  if (head == NULL){
+    return NULL;
+  }
+  head->next = llfilter(head->next, pred); //recurse to the end, dont do any work, then we can work on it going back up
+  if (pred(head->val)){ //we need to delete this node
+    Node* temp = head->next; // we need the next node so we can potentially link it to the previous valid nodes if its valid or to show the end of the list
+    delete head; // delete the node
+    return temp; //return the pointer to the last valid node (or NULL to show the end of the list)
+  }
+  else{ //we keep the node, so we return a pointer to it to be linked
+    return head;
+  }
 }
 
 #endif
